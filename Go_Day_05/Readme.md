@@ -1,6 +1,6 @@
-# Day 04 - Go Intensive
+# Day 05 - Go Intensive
 
-## Candy!
+## Santa is back in town 
 
 ## Contents
 
@@ -11,13 +11,15 @@
 3. [Chapter III](#chapter-iii) \
     3.1. [Intro](#intro)
 4. [Chapter IV](#chapter-iv) \
-    4.1. [Exercise 00: Catching the Fortune](#exercise-00-catching-the-fortune)
+    4.1. [Exercise 00: Toys on a Tree](#exercise-00-toys-on-a-tree)
 5. [Chapter V](#chapter-v) \
-    5.1. [Exercise 01: Law and Order](#exercise-01-law-and-order)
+    5.1. [Exercise 01: Decorating](#exercise-01-decorating)
 6. [Chapter VI](#chapter-vi) \
-    6.1. [Exercise 02: Old Cow](#exercise-02-old-cow)
+    6.1. [Exercise 02: Heap of Presents](#exercise-02-heap-of-presents)
 7. [Chapter VII](#chapter-vii) \
-    7.1. [Reading](#reading)
+    7.1. [Exercise 03: Knapsack](#exercise-03-knapsack)
+8. [Chapter VIII](#chapter-viii) \
+    8.1. [Reading](#reading)
 
 
 <h2 id="chapter-i" >Chapter I</h2>
@@ -33,240 +35,165 @@
 
 - You should only turn in `*.go` files and (in case of external dependencies) `go.mod` + `go.sum`
 - Your code for this task should be buildable with just `go build`
-- Even though it is required to not modify the C code, you'll still have to comment out `main()` function in it, otherwise the program won't compile (two entry points)
 
 <h2 id="chapter-iii" >Chapter III</h2>
 <h2 id="intro" >Intro</h2>
 
-Mister Rogers is very sad. He's sitting at your office and mumbles "My whole business...How am I supposed to make people happy now?".
+&mdash; I don't know - said Lily. - The only thing I read about this thing ancient dudes called "Christmas" is that you are supposed to have, like, a tree, something called "a garland", and, finally, a "heap of presents", whatever that means.
 
-The story is as old as the world itself. This new client of yours started a new business selling candy all across this muddy town. At first, everything was perfect - several vending machines, 5 delicious kinds of candy and lines of children begging their parents to buy some for them. And then it was like a thunder, when someone broke into a data center and stole a server responsible for handling candy orders. Not only that, an old developer has gone missing, too! Coincidence? You don't think so.
+You move neuralink visor down to your neck.
 
-You pour mister Rogers a glass of good old bourbon and start asking questions trying to get more details.
+&mdash; Come on, girl, it's just an urban legend! Why do you think a combination of such basic things should lead to something interesting?
 
-"Well, I don't know much. All our vending machines were selling the same set of candy, you know, here they are on the brochure" - he gives you the piece of colorful paper advertising five new amazing tastes:
+She looked up to the ceiling, dreaming.
 
-```
-Cool Eskimo: 10 cents
-Apricot Aardvark: 15 cents
-Natural Tiger: 17 cents
-Dazzling 	Elderberry: 21 cents
-Yellow Rambutan: 23 cents
-```
+&mdash; There used to be this, like, old guy in red hoodie or something... Do you think he was one of the first rebellion hackers? You know, sharing quickhacks with everybody? So if script kiddies were thrilled about freedom and fighting the corpos, they could use their "presents" to breach enterprise firewalls?
 
-"That's some weird sounding names" - you say - "How do people even remember these things?"
-"Oh, that one's easy" - said Rogers - "We've been using abbreviations everywhere, including our source code, so it's CE, AA, NT and so on"
+&mdash; Yeah, seems legit. Urban legends of the underground tend to have this mystical aura, you know. Most likely it was just some bearded open source enthusiast. Crazy as people are nowadays, at least nobody says something like "he was riding an antigravity sleigh pulled by robo reindeers". It's more likely that he had a botnet of portable [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) binaries on enterprise servers collecting secret stuff to give it to people for free.
 
-He sobs.
+Lily leaned back on the couch and pulled up a bunch of holograms.
 
-"But does this even matter now? My business is ruined anyway, all this is just nonsense now!"
-
-"Please focus, mister Rogers" - you've seen guys behaving like this many times, this place isn't called "Gopher PI" for nothing - "Is there any detail you didn't mention yet?"
-
-"You're right! I've almost forgot!" - he pulls a piece of paper out of the pocket and hands it over. - "The thief left a note!"
-
-You look at the text written with marker on one side: "I can't eat any more candy!". This doesn't give you much. Then you turn over the sheet and...
-
-"Okay, mister Rogers. The good news is, I now know for sure it was your ex-employee who stole the server. But not only that! Something tells me I can help you restore your business, too."
+&mdash; Okay, so everyone knows how trees look like - a bunch of 3d graphs without cycles were floating above her head - Which of them do we need?
 
 <h2 id="chapter-iv" >Chapter IV</h2>
-<h3 id="ex00">Exercise 00: Catching the Fortune</h3>
+<h3 id="ex00">Exercise 00: Toys on a Tree</h3>
 
-Turns out, the thief used the first piece of paper he had on his desk, and by a happy coincidence it was a specification for a protocol between vending machine and a server. It looked like this:
+After some time, you two put together a structure for a [Binary tree](https://en.wikipedia.org/wiki/Binary_tree) node:
 
-```yaml
----
-swagger: '2.0'
-info:
-  version: 1.0.0
-  title: Candy Server
-paths:
-  /buy_candy:
-    post:
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: order
-          description: summary of the candy order
-          schema:
-            type: object
-            required:
-              - money
-              - candyType
-              - candyCount
-            properties:
-              money:
-                description: amount of money put into vending machine
-                type: integer
-              candyType:
-                description: kind of candy
-                type: string
-              candyCount:
-                description: number of candy
-                type: integer
-      operationId: buyCandy
-      responses:
-        201:
-          description: purchase succesful
-          schema:
-              type: object
-              properties:
-                thanks:
-                  type: string
-                change:
-                  type: integer
-        400:
-          description: some error in input data
-          schema:
-              type: object
-              properties:
-                error:
-                  type: string
-        402:
-          description: not enough money
-          schema:
-              type: object
-              properties:
-                error:
-                  type: string
+```go
+type TreeNode struct {
+    HasToy bool
+    Left *TreeNode
+    Right *TreeNode
+}
 ```
 
-In next hours, mister Rogers told you all the details. In order to recreate the server, you have to use this spec to produce a bunch of Go code which will actually implement the backend part. It's possible to rewrite the whole thing manually, but in this case the thief may get away before you do it, so you have to generate the code ASAP.
+&mdash; Looks like you are supposed to... "hang toys" on trees? - Lily looked a bit confused. - Okay, anyway, let's hope just a boolean value will suffice. But they say it's also wrong to put more toys on one side, should it be uniform?
 
-Every candy buyer puts in money, chooses which kind of candy to purchase and how many. This data is being sent over to the server via HTTP and JSON and then:
+&mdash; Okay, I get it - you said. - Let's write a function `areToysBalanced` which will receive a pointer to a tree root as an argument. The point is to spit out a true/false boolean value depending on if left subtree has the same amount of toys as the right one. The value on the root itself can be ignored.
 
-1) If the sum of candy prices (see Chapter 1) is smaller or equal to the amount of money the buyer gave to a machine, the server responds with HTTP 201 and returns a JSON with two fields - "thanks" saying "Thank you!" and "change" being the amount of change the machine has to give back the customer.
-2) If the sum is larger that the amount of money provided, the server responds with HTTP 402 and an error message in JSON saying "You need {amount} more money!", where {amount} is the difference between the provided and expected.
-3) If the client provided a negative candyCount or wrong candyType (remember - all five candy types are encoded by two letters, so it's one of "CE", "AA", "NT", "DE" or "YR", all other cases are considered non-valid) then the server should respond with 400 and an error inside JSON describing what had gone wrong. You can actually do it in two different ways - it's either write the code manually with these checks or modify the Swagger spec above so it would cover these cases.
-
-Remember - all data from both client and server should be in JSON, so you can test your server like this, for example:
+So, your function should return `true` for such trees (0/1 represent false/true, equal amount of 1's on both subtrees):
 
 ```
-curl -XPOST -H "Content-Type: application/json" -d '{"money": 20, "candyType": "AA", "candyCount": 1}' http://127.0.0.1:3333/buy_candy
-
-{"change":5,"thanks":"Thank you!"}
+    0
+   / \
+  0   1
+ / \
+0   1
 ```
 
-or
+```
+    1
+   /  \
+  1     0
+ / \   / \
+1   0 1   1
+```
+
+and `false` for such trees (non-equal amount of 1's on both subtrees):
 
 ```
-curl -XPOST -H "Content-Type: application/json" -d '{"money": 46, "candyType": "YR", "candyCount": 2}' http://127.0.0.1:3333/buy_candy
-
-{"change":0,"thanks":"Thank you!"}
+  1
+ / \
+1   0
 ```
 
-Also, you don't need to keep track of stock of different types of candy yourself, just consider this being done by machines themselves. Just validate user input and calculate the change.
+```
+  0
+ / \
+1   0
+ \   \
+  1   1
+```
 
 <h2 id="chapter-v" >Chapter V</h2>
-<h3 id="ex01">Exercise 01: Law and Order</h3>
+<h3 id="ex01">Exercise 01: Decorating</h3>
 
-You lay back and smile feeling something that seemed to be the case well cooked. Mister Rogers seems to relax a little, too. But then his face changes again.
+&mdash; So, now about this "garland"... It is supposed to be "reeled up" on a tree.
 
-"I know we've already paid for increased security at our datacenter" - he said a bit thoughtfully. - "...but what if this criminal desides to perform some [Man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) trickery? My business will be destroyed again! People will lose their jobs abd I'll get bankrupt!"
+Lily rotated hologram back and forth, trying to think of something. Then suddenly she lights up with enthusiasm.
 
-"Easy there, good sir" - you say with a smirk. - "I think I've got just what you need here."
+&mdash; I get it! Let's do it like this... - she draws something that resembles a 3d snake on top of the tree.
 
-So, you need to implement a certificate authentication for the server as well as a test client which will be able to query your API using a self-signed certificate and a local security authority to "verify" it on both sides.
-
-You already have a server which supports TLS, but it is possible that you'll have to re-generate the code specifying an additional parameter, so it will be using use secure URLs.
-
-Also, you'll need a local "certificate authority" to manage certificates. For our task [minica](https://github.com/jsha/minica) seems like a good enough solution. There is a link to a really helpful video in last Chapter if you want to know more details about how Go works with secure connections.
-
-So, because we're talking a full-blown mutual TLS authentication, you'll have to generate two cert/key pairs - one for the server and one for the client. Minica will also generate a CA file called `minica.pem` for you which you'll need to plug into your client somehow (your auto-generated server should already support specifying CA file as well as `key.pem` and `cert.pem` through command line parameters). Also, generating certificate may require you to use a domain instead of an IP address, so in examples below we will use "candy.tld". For it to work on a local machine you can put it into '/etc/hosts' file.
-
-Keep in mind, that because you're using a custom local CA you likely won't be able to query your API using cURL, web browser or tool like [Postman](https://www.postman.com/) anymore without tuning.
-
-Your test client should support flags '-k' (accepts two-letter abbreviation for the candy type), '-c' (count of candy to buy) and '-m' (amount of money you "gave to machine"). So, the "buying request" should look like this:
+So, now you have to write another function called `unrollGarland()`, which also receives a pointer to a root node. The idea is to go top down, layer by layer, going right on even horisontal layers and going left on every odd. The returned value of this function should be a slice of bools. So, for this tree:
 
 ```
-~$ ./candy-client -k AA -c 2 -m 50
-Thank you! Your change is 20
+    1
+   /  \
+  1     0
+ / \   / \
+1   0 1   1
 ```
+
+The answer will be [true, true, false, true, true, false, true] (root is true, then on second level we go from left to right, and then on third from right to left, like a zig-zag).
 
 <h2 id="chapter-vi" >Chapter VI</h2>
-<h3 id="ex02">Exercise 02: Old Cow</h3>
+<h3 id="ex02">Exercise 02: Heap of Presents</h3>
 
-In a few days mister Rogers finally calls you with some great news - the thief was apprehended and immediately confessed! But candy businessman also had a small request.
+&mdash; Perfect! I have no idea what those old dudes meant by "Christmas tree", but I think we've met the general requirements.
 
-"You seem like you really do know your way around machines, don't ya? There is one last thing I'd ask you to do, basically nothing. Our customers prefer something funny instead of just plain 'thank you', so my nephew Patrick wrote a program that generates some weird animal saying things. I think it's written in C, but that's not a problem for you, isn't it? Please don't change the code, Patrick is still improving it!"
+&mdash; So, about those "presents"...
 
-Oh boy. You look through your emails and notice one from mister Rogers with a code attached to it:
+&mdash; Presents, right! - Lily raises her elegant finger with a very long purple nail. It was specifically reinforced to fight enemies and (a lot more frequently) to unscrew various devices. - So, let's think of it as a pile. Every such "present" may look like this:
 
-```c
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-unsigned int i;
-unsigned int argscharcount = 0;
-
-char *ask_cow(char phrase[]) {
-  int phrase_len = strlen(phrase);
-  char *buf = (char *)malloc(sizeof(char) * (160 + (phrase_len + 2) * 3));
-  strcpy(buf, " ");
-
-  for (i = 0; i < phrase_len + 2; ++i) {
-    strcat(buf, "_");
-  }
-
-  strcat(buf, "\n< ");
-  strcat(buf, phrase);
-  strcat(buf, " ");
-  strcat(buf, ">\n ");
-
-  for (i = 0; i < phrase_len + 2; ++i) {
-    strcat(buf, "-");
-  }
-  strcat(buf, "\n");
-  strcat(buf, "        \\   ^__^\n");
-  strcat(buf, "         \\  (oo)\\_______\n");
-  strcat(buf, "            (__)\\       )\\/\\\n");
-  strcat(buf, "                ||----w |\n");
-  strcat(buf, "                ||     ||\n");
-  return buf;
-}
-
-int main(int argc, char *argv[]) {
-  for (i = 1; i < argc; ++i) {
-    argscharcount += (strlen(argv[i]) + 1);
-  }
-  argscharcount = argscharcount + 1;
-
-  char *phrase = (char *)malloc(sizeof(char) * argscharcount);
-  strcpy(phrase, argv[1]);
-
-  for (i = 2; i < argc; ++i) {
-    strcat(phrase, " ");
-    strcat(phrase, argv[i]);
-  }
-  char *cow = ask_cow(phrase);
-  printf("%s", cow);
-  free(phrase);
-  free(cow);
-  return 0;
+```go
+type Present struct {
+    Value int
+    Size int
 }
 ```
 
-Looks like you'll have to return an ASCII-powered cow as a text in "thanks" field in response. When querying by cURL it will look like this:
+&mdash; Hmm, what's "Value"?
+
+&mdash; Well, some things you tend to value more than the others, right? So they should be comparable.
+
+&mdash; Okay, and "Size" is about how long will it take me to download it, right?
+
+&mdash; Exactly! So, the the coolest things should be on top.
+
+You need to implement a PresentHeap data structure (using built-in library "container/heap" is recommended, but is not strictly required). Presents are compared by Value first (most valuable present goes on top of the heap). *Only* in case two presents have an equal Value, the smaller one is considered to be "cooler" than the other one (wins in comparison).
+
+Apart from the structure itself, you should implement a function `getNCoolestPresents()`, that, given an unsorted slice of Presents and an integer `n`, will return a sorted slice (desc) of the "coolest" ones from the list. It should use the PresentHeap data structure inside and return an error if `n` is larger than the size of the slice or is negative.
+
+So, if we represent each Present by a tuple of two numbers (Value, Size), then for this input:
 
 ```
-~$ curl -s --key cert/client/key.pem --cert cert/client/cert.pem --cacert cert/minica.pem -XPOST -H "Content-Type: application/json" -d '{"candyType": "NT", "candyCount": 2, "money": 34}' "https://candy.tld:3333/buy_candy"
-{"change":0,"thanks":" ____________\n< Thank you! >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n"}
-
+(5, 1)
+(4, 5)
+(3, 1)
+(5, 2)
 ```
 
-Apparently, all you need is to reuse this `ask_cow()` C function without rewriting it in your Go code.
-
-"Sometimes I think I have to drop this detective work and just go work as a Senior Engineer" - you grumble.
-
-At least you should probably have as much candy as you want in return. Like, for the rest of your life.
+the two "coolest" Presents would be [(5, 1), (5, 2)], because the first one has the smaller size of those two with Value = 5.
 
 <h2 id="chapter-vii" >Chapter VII</h2>
+<h3 id="ex03">Exercise 03: Knapsack</h3>
+
+&mdash; Wait! - you said. - But how do I know that all these amazing presents won't eat up all the space on my hard drive?
+
+Lily thought for a moment, but then proposed:
+
+&mdash; For this case, let's only download the most valuable presents!
+
+&mdash; But the Heap is using a different ordering and won't help us here...
+
+&mdash; True, true. Anyway, there should be some argument to figure out how to get the most value out of the space you have, right?
+
+...It's been a great winter night in CyberCity. Even though traditions changed a lot in last centuries, you two had a feeling you did everything right. Also, Lily didn't know yet about a cool new portable cyberdeck you've prepared as a gift to her this evening. And you had no idea what's in that small mysterious box on her table.
+
+As a last task, you have to implement a classic dynamic programming algorithm, also known as "Knapsack Problem". Input is almost the same, as in the last task - you have a slice of Presents, each with Value and Size, but this time you also have a hard drive with a limited capacity. So, you have to pick only those presents, that fit into that capacity and maximize the resulting value.
+
+Please write a function `grabPresents()`, that receives a slice of Present instances and a capacity of your hard drive. As an output, this function should give out another slice of Presents, which should have a maximum cumulative Value that you can get with such capacity.
+
+<h2 id="chapter-viii" >Chapter VIII</h2>
 <h3 id="reading">Reading</h3>
 
-[Using the spec](https://goswagger.io/tutorial/custom-server.html)
-[Secure connections](https://www.youtube.com/watch?v=kxKLYDLzuHA)
-[Original cowsay](https://en.wikipedia.org/wiki/Cowsay)
+[Binary Tree](https://en.wikipedia.org/wiki/Binary_tree)
+[Breadth-First Search](https://en.wikipedia.org/wiki/Breadth-first_search)
+[Depth-First Search](https://en.wikipedia.org/wiki/Depth-first_search)
+[Recursion in Go](https://www.tutorialspoint.com/go/go_recursion.htm)
+[Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
+[Heap implementation in Go](https://golang.org/pkg/container/heap/)
+[Knapsack Problem](https://en.wikipedia.org/wiki/Knapsack_problem)
+[Multi-Dimensional arrays and slices in Go](https://golangbyexample.com/two-dimensional-array-slice-golang/)
+
